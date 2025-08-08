@@ -41,7 +41,7 @@ urlpatterns = [
     
     # User management views (require permissions)
     path('users/', UserListView.as_view(), name='user_list'),
-    path('admin/users/', admin_user_management, name='admin_user_management'),
+    path('manage/users/', admin_user_management, name='admin_user_management'),
     
     # Redirect root to dashboard
     path('', dashboard_view, name='home'),
