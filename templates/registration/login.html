@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white text-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </h4>
+            </div>
+            <div class="card-body">
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <strong>Error:</strong> Your username and password didn't match. Please try again.
+                    </div>
+                {% endif %}
+
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.username.id_for_label }}" class="form-label">
+                            <i class="fas fa-user"></i> Username
+                        </label>
+                        {{ form.username }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.password.id_for_label }}" class="form-label">
+                            <i class="fas fa-lock"></i> Password
+                        </label>
+                        {{ form.password }}
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <a href="{% url 'password_reset' %}" class="text-decoration-none">
+                        <i class="fas fa-question-circle"></i> Forgot your password?
+                    </a>
+                </div>
+            </div>
+            <div class="card-footer text-center">
+                <small class="text-muted">
+                    Don't have an account? 
+                    <a href="{% url 'signup' %}" class="text-decoration-none">
+                        <i class="fas fa-user-plus"></i> Sign up here
+                    </a>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

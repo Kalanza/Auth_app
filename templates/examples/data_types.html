@@ -1,0 +1,339 @@
+{% extends 'base.html' %}
+
+{% comment %}
+This template demonstrates how to receive and display data passed from Django views.
+It shows all the common patterns you'll use as a junior developer.
+{% endcomment %}
+
+{% block title %}{{ page_title|default:"Data Types Demo" }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">{{ page_title|default:"Welcome!" }}</h1>
+            <p class="lead">{{ page_description|default:"This page demonstrates data passing from views to templates." }}</p>
+        </div>
+    </div>
+
+    <!-- Basic String and Number Data -->
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Basic Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>User Name:</strong> {{ user_name|default:"Guest" }}</p>
+                    <p><strong>Welcome Message:</strong> {{ welcome_message }}</p>
+                    <p><strong>Total Users:</strong> {{ total_users|default:0 }}</p>
+                    <p><strong>Average Age:</strong> {{ average_age|floatformat:1 }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Boolean Conditionals -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Status Information</h5>
+                </div>
+                <div class="card-body">
+                    {% comment %}
+                    IF/ELSE statements in Django templates
+                    You can use: {% if %}, {% elif %}, {% else %}, {% endif %}
+                    {% endcomment %}
+                    
+                    {% if is_premium_user %}
+                        <div class="alert alert-success">
+                            <i class="fas fa-crown"></i> 
+                            You are a Premium User!
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-user"></i> 
+                            Standard User Account
+                        </div>
+                    {% endif %}
+                    
+                    {% if has_notifications %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-bell"></i> 
+                            You have new notifications!
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No new notifications</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lists - Using FOR loops -->
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Favorite Colors</h5>
+                </div>
+                <div class="card-body">
+                    {% comment %}
+                    FOR loops in Django templates
+                    Basic syntax: {% for item in list %}...{% endfor %}
+                    {% endcomment %}
+                    
+                    {% if favorite_colors %}
+                        <ul class="list-group">
+                            {% for color in favorite_colors %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ color }}
+                                    {% comment %}
+                                    forloop is a special variable available inside loops:
+                                    - forloop.counter: current iteration (starts at 1)
+                                    - forloop.counter0: current iteration (starts at 0)
+                                    - forloop.first: True if first iteration
+                                    - forloop.last: True if last iteration
+                                    {% endcomment %}
+                                    <span class="badge bg-primary rounded-pill">{{ forloop.counter }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">No favorite colors specified.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Recent Activities</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_activities %}
+                        <ul class="list-unstyled">
+                            {% for activity in recent_activities %}
+                                <li class="mb-2">
+                                    {% if forloop.first %}
+                                        <i class="fas fa-star text-warning"></i>
+                                    {% else %}
+                                        <i class="fas fa-check text-success"></i>
+                                    {% endif %}
+                                    {{ activity }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">No recent activities.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dictionary Data - Using Dot Notation -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>User Statistics</h5>
+                </div>
+                <div class="card-body">
+                    {% comment %}
+                    Dictionary values are accessed using dot notation in templates
+                    {{ dict_name.key_name }}
+                    {% endcomment %}
+                    
+                    {% if user_stats %}
+                        <div class="row">
+                            <div class="col-md-3 text-center">
+                                <div class="border p-3 rounded">
+                                    <h3 class="text-primary">{{ user_stats.posts_count }}</h3>
+                                    <p class="mb-0">Posts</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="border p-3 rounded">
+                                    <h3 class="text-success">{{ user_stats.followers }}</h3>
+                                    <p class="mb-0">Followers</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="border p-3 rounded">
+                                    <h3 class="text-info">{{ user_stats.following }}</h3>
+                                    <p class="mb-0">Following</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="border p-3 rounded">
+                                    <h3 class="text-warning">{{ user_stats.likes_received }}</h3>
+                                    <p class="mb-0">Likes</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Computed values -->
+                        <div class="mt-3">
+                            <p><strong>Total Engagement:</strong> {{ total_engagement }}</p>
+                            {% if is_popular_user %}
+                                <span class="badge bg-success">Popular User</span>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Complex Data - List of Dictionaries -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Recent Posts</h5>
+                </div>
+                <div class="card-body">
+                    {% comment %}
+                    When you have a list of dictionaries (common for database records),
+                    you loop through the list and access dictionary keys with dot notation
+                    {% endcomment %}
+                    
+                    {% if recent_posts %}
+                        <div class="row">
+                            {% for post in recent_posts %}
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h6 class="card-title">{{ post.title }}</h6>
+                                            <p class="text-muted small">{{ post.date }}</p>
+                                            <div class="d-flex justify-content-between">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-eye"></i> {{ post.views }}
+                                                </small>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-heart"></i> {{ post.likes }}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No recent posts to display.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template Filters Examples -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Template Filters Demo</h5>
+                    <small class="text-muted">Filters modify how variables are displayed</small>
+                </div>
+                <div class="card-body">
+                    {% comment %}
+                    Template filters modify variables for display
+                    Syntax: {{ variable|filter_name }}
+                    You can chain filters: {{ variable|filter1|filter2 }}
+                    {% endcomment %}
+                    
+                    <p><strong>Original text:</strong> {{ welcome_message }}</p>
+                    <p><strong>Uppercase:</strong> {{ welcome_message|upper }}</p>
+                    <p><strong>Lowercase:</strong> {{ welcome_message|lower }}</p>
+                    <p><strong>Title case:</strong> {{ welcome_message|title }}</p>
+                    <p><strong>First 10 words:</strong> {{ welcome_message|truncatewords:10 }}</p>
+                    <p><strong>Length:</strong> {{ welcome_message|length }} characters</p>
+                    
+                    {% if user_name %}
+                        <p><strong>Default value demo:</strong> {{ empty_variable|default:"No value provided" }}</p>
+                        <p><strong>Safe HTML:</strong> {{ welcome_message|safe }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- URL and Link Examples -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Navigation Links</h5>
+                </div>
+                <div class="card-body">
+                    {% comment %}
+                    Django URL tags for creating links
+                    {% url 'url_name' %} - basic URL
+                    {% url 'url_name' parameter %} - URL with parameter
+                    {% endcomment %}
+                    
+                    <div class="btn-group" role="group">
+                        <a href="{% url 'hello_world' %}" class="btn btn-outline-primary">Hello World</a>
+                        <a href="{% url 'database_example' %}" class="btn btn-outline-primary">Database Example</a>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'user_dashboard' %}" class="btn btn-outline-success">Dashboard</a>
+                        {% endif %}
+                        <a href="{% url 'search' %}" class="btn btn-outline-info">Search</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% comment %}
+==============================================================================
+COMMON DJANGO TEMPLATE PATTERNS FOR BEGINNERS:
+==============================================================================
+
+1. DISPLAYING VARIABLES:
+   {{ variable_name }}
+
+2. CONDITIONALS:
+   {% if condition %}...{% elif other_condition %}...{% else %}...{% endif %}
+
+3. LOOPS:
+   {% for item in list %}...{% endfor %}
+
+4. FILTERS:
+   {{ variable|filter_name:parameter }}
+
+5. URL GENERATION:
+   {% url 'url_name' %}
+   {% url 'url_name' parameter %}
+
+6. TEMPLATE INHERITANCE:
+   {% extends 'base_template.html' %}
+   {% block block_name %}...{% endblock %}
+
+7. INCLUDING OTHER TEMPLATES:
+   {% include 'partial_template.html' %}
+
+8. COMMENTS:
+   {% comment %}This is a comment{% endcomment %}
+
+9. STATIC FILES:
+   {% load static %}
+   <img src="{% static 'images/logo.png' %}">
+
+10. CSRF TOKEN (for forms):
+    {% csrf_token %}
+
+REMEMBER:
+- Variables use {{ }}
+- Template tags use {% %}
+- Always close tags that require it
+- Use filters to format data
+- Keep logic simple in templates
+- Do complex processing in views
+==============================================================================
+{% endcomment %}
+
+{% endblock %}

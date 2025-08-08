@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% comment %}
+This is the simplest possible Django template example.
+It shows how data from the view appears in the template.
+{% endcomment %}
+
+{% block title %}{{ app_name }} - Hello World{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="text-center">
+                <!-- Display the greeting from our view -->
+                <h1 class="display-4 text-primary">{{ greeting }}</h1>
+                
+                <!-- Display the app name -->
+                <p class="lead">Welcome to {{ app_name }}!</p>
+                
+                <!-- Display the current time -->
+                <div class="alert alert-info">
+                    <i class="fas fa-clock"></i>
+                    Current server time: {{ current_time|date:"F d, Y - H:i:s" }}
+                </div>
+                
+                <!-- Display version info -->
+                <p class="text-muted">Version {{ version }}</p>
+                
+                <!-- Link to more examples -->
+                <div class="mt-4">
+                    <a href="{% url 'data_types' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-arrow-right"></i>
+                        See More Examples
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% comment %}
+EXPLANATION FOR JUNIOR DEVELOPERS:
+====================================
+
+1. {{ greeting }} - This displays the 'greeting' variable that we passed from the view
+2. {{ app_name }} - This shows the 'app_name' from our context dictionary
+3. {{ current_time|date:"..." }} - This applies a date filter to format the timestamp
+4. {% url 'data_types' %} - This generates a URL to another view using the URL name
+
+The data flows like this:
+VIEW (Python) → CONTEXT (Dictionary) → TEMPLATE (HTML) → USER (Browser)
+
+In our view, we had:
+context = {
+    'greeting': 'Hello, World!',
+    'current_time': datetime.now(),
+    'app_name': 'My Django App',
+    'version': '1.0.0'
+}
+
+And here in the template, we access these values using {{ variable_name }}
+{% endcomment %}
+
+{% endblock %}

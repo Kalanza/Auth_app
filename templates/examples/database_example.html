@@ -1,0 +1,334 @@
+{% extends 'base.html' %}
+
+{% comment %}
+This template demonstrates how to display real database data
+passed from Django views. Perfect for junior developers learning
+how to work with QuerySets and model data.
+{% endcomment %}
+
+{% block title %}Database Examples - Articles{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header with Statistics -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5">{{ page_title }}</h1>
+            <p class="lead">{{ page_description }}</p>
+            
+            <!-- Statistics Cards -->
+            <div class="row">
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card bg-primary text-white text-center">
+                        <div class="card-body">
+                            <h3>{{ stats.total_articles }}</h3>
+                            <p class="mb-0">Total Articles</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card bg-success text-white text-center">
+                        <div class="card-body">
+                            <h3>{{ stats.published_articles }}</h3>
+                            <p class="mb-0">Published</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card bg-warning text-white text-center">
+                        <div class="card-body">
+                            <h3>{{ stats.draft_articles }}</h3>
+                            <p class="mb-0">Drafts</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card bg-info text-white text-center">
+                        <div class="card-body">
+                            <h3>{{ stats.total_authors }}</h3>
+                            <p class="mb-0">Authors</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Latest Article Highlight -->
+    {% if latest_article %}
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-star"></i> Latest Published Article</h5>
+                </div>
+                <div class="card-body">
+                    <h4 class="card-title">{{ latest_article.title }}</h4>
+                    <p class="text-muted mb-2">
+                        <i class="fas fa-user"></i> By {{ latest_article.author.first_name }} {{ latest_article.author.last_name|default:latest_article.author.username }}
+                        <span class="mx-2">|</span>
+                        <i class="fas fa-calendar"></i> {{ latest_article.created_at|date:"F d, Y" }}
+                    </p>
+                    <p class="card-text">{{ latest_article.content|truncatewords:50 }}</p>
+                    <a href="{% url 'article_detail' latest_article.id %}" class="btn btn-primary">
+                        <i class="fas fa-arrow-right"></i> Read More
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Authors Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h3>Our Authors</h3>
+            {% if authors %}
+                <div class="row">
+                    {% for author in authors %}
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="fas fa-user"></i>
+                                        {{ author.first_name }} {{ author.last_name|default:author.username }}
+                                    </h6>
+                                    <p class="text-muted small">
+                                        {% comment %}
+                                        Related field access: author.article_set gets all articles by this author
+                                        We can access related objects and their counts
+                                        {% endcomment %}
+                                        {{ author.article_set.count }} article{{ author.article_set.count|pluralize }}
+                                    </p>
+                                    <p class="text-muted small">
+                                        <i class="fas fa-calendar"></i>
+                                        Joined {{ author.date_joined|date:"M Y" }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">No authors found.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Published Articles List -->
+    <div class="row">
+        <div class="col-12">
+            <h3>Published Articles</h3>
+            
+            {% if published_articles %}
+                {% comment %}
+                This is the main content area showing QuerySet data.
+                Each 'article' is a model instance with attributes and related objects.
+                {% endcomment %}
+                
+                <div class="row">
+                    {% for article in published_articles %}
+                        <div class="col-lg-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <a href="{% url 'article_detail' article.id %}" class="text-decoration-none">
+                                            {{ article.title }}
+                                        </a>
+                                    </h5>
+                                    
+                                    <!-- Author and Date Info -->
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="me-3">
+                                            {% comment %}
+                                            Accessing related objects: article.author is a ForeignKey relationship
+                                            We can access all User model fields through this relationship
+                                            {% endcomment %}
+                                            <img src="https://ui-avatars.com/api/?name={{ article.author.username }}&size=40&background=007bff&color=fff" 
+                                                 alt="{{ article.author.username }}" 
+                                                 class="rounded-circle">
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">
+                                                {{ article.author.first_name }} {{ article.author.last_name|default:article.author.username }}
+                                            </div>
+                                            <small class="text-muted">
+                                                {{ article.created_at|date:"F d, Y \a\t H:i" }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Article Content Preview -->
+                                    <p class="card-text">
+                                        {% comment %}
+                                        Template filters in action:
+                                        - truncatewords: limits to specified number of words
+                                        - default: shows fallback value if field is empty
+                                        {% endcomment %}
+                                        {{ article.content|truncatewords:25 }}
+                                    </p>
+                                    
+                                    <!-- Article Metadata -->
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            {% comment %}
+                                            Boolean field display with conditional styling
+                                            {% endcomment %}
+                                            {% if article.is_published %}
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check"></i> Published
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">
+                                                    <i class="fas fa-clock"></i> Draft
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <small class="text-muted">
+                                            {% comment %}
+                                            Date comparisons and relative time
+                                            {% endcomment %}
+                                            {% if article.created_at != article.updated_at %}
+                                                Updated {{ article.updated_at|timesince }} ago
+                                            {% else %}
+                                                Created {{ article.created_at|timesince }} ago
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-footer bg-transparent">
+                                    <div class="d-flex justify-content-between">
+                                        <a href="{% url 'article_detail' article.id %}" 
+                                           class="btn btn-primary btn-sm">
+                                            <i class="fas fa-eye"></i> Read Article
+                                        </a>
+                                        
+                                        {% comment %}
+                                        User permission checks for editing
+                                        {% endcomment %}
+                                        {% if user.is_authenticated %}
+                                            {% if user == article.author or user.has_perm:'myapp.change_article' %}
+                                                <a href="#" class="btn btn-outline-secondary btn-sm">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </a>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% comment %}
+                        Loop utilities - forloop is a special template variable
+                        {% endcomment %}
+                        {% if forloop.counter|divisibleby:2 %}
+                            </div><div class="row">  <!-- Start new row every 2 articles -->
+                        {% endif %}
+                        
+                    {% endfor %}
+                </div>
+                
+            {% else %}
+                <!-- Empty State -->
+                <div class="text-center py-5">
+                    <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                    <h4>No Articles Yet</h4>
+                    <p class="text-muted">Be the first to publish an article!</p>
+                    {% if user.is_authenticated %}
+                        <a href="#" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Create Article
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Pagination Example (if you implement it in the view) -->
+    {% comment %}
+    If you use Django's pagination in your view, you can display page controls like this:
+    
+    {% if is_paginated %}
+    <nav aria-label="Articles pagination">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                </li>
+            {% endif %}
+            
+            <li class="page-item active">
+                <span class="page-link">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+            </li>
+            
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    {% endcomment %}
+</div>
+
+{% comment %}
+==============================================================================
+KEY CONCEPTS DEMONSTRATED IN THIS TEMPLATE:
+==============================================================================
+
+1. QUERYSET ITERATION:
+   {% for article in published_articles %}
+   - published_articles is a QuerySet from the view
+   - Each 'article' is a model instance with all fields and methods
+
+2. MODEL FIELD ACCESS:
+   {{ article.title }} - Direct field access
+   {{ article.created_at|date:"F d, Y" }} - Field with filter
+
+3. RELATED OBJECT ACCESS:
+   {{ article.author.username }} - ForeignKey relationship
+   {{ author.article_set.count }} - Reverse relationship
+
+4. TEMPLATE FILTERS:
+   - |date: Format dates
+   - |truncatewords: Limit text length
+   - |default: Fallback values
+   - |timesince: Relative time ("2 hours ago")
+   - |pluralize: Add 's' for plural forms
+
+5. CONDITIONAL RENDERING:
+   {% if article.is_published %}...{% endif %}
+   - Show different content based on data
+
+6. LOOP UTILITIES:
+   - forloop.counter: Current loop iteration
+   - forloop.first: True on first iteration
+   - forloop.last: True on last iteration
+
+7. URL GENERATION:
+   {% url 'article_detail' article.id %}
+   - Generate URLs with parameters
+
+8. USER PERMISSIONS:
+   {% if user.has_perm:'myapp.change_article' %}
+   - Check user permissions for conditional display
+
+9. EMPTY STATES:
+   {% if published_articles %}...{% else %}...{% endif %}
+   - Handle cases where no data exists
+
+REMEMBER:
+- Views prepare and optimize data
+- Templates display and format data
+- Keep complex logic in views, not templates
+- Use filters for simple formatting
+- Always handle empty states gracefully
+==============================================================================
+{% endcomment %}
+
+{% endblock %}
